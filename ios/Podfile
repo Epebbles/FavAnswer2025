@@ -5,7 +5,13 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+platform :ios, '15.1'  # ✅ Ensure minimum iOS version is 12.0+
+
+use_modular_headers!
+
+$FirebaseSDKVersion = '11.8.1' # ✅ Set to the latest stable version
+
+
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -19,17 +25,39 @@ target 'FavAnswer2025' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # ✅ Add Firebase dependencies
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
+  pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
+
+   # ✅ Ensure Firebase SDK modules are defined
+   pod 'Firebase/Auth', $FirebaseSDKVersion
+   pod 'Firebase/Core', $FirebaseSDKVersion
+   pod 'Firebase/Analytics', $FirebaseSDKVersion
+
+  # ✅ Add Facebook SDK for react-native-fbsdk-next
+  pod 'FBSDKCoreKit', '~> 18.0'
+  pod 'FBSDKLoginKit', '~> 18.0'
+  pod 'FBSDKShareKit', '~> 18.0'
+
+
+  # ✅ Post-install hook (ensure compatibility)
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
     )
+
+    # ✅ Fix duplicate FBSDKVersion warning
+    installer.pods_project.targets.each do |target|
+      if target.name.include?('FBSDK')
+        target.build_configurations.each do |config|
+          config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+        end
+      end
+    end
   end
 end

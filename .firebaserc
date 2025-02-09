@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "favanswer-87db5",
+    "staging": "favanswer-87db5"
+  },
+  "targets": {},
+  "etags": {}
+}
