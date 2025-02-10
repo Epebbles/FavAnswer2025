@@ -1,4 +1,4 @@
-import { auth, firebase } from '@react-native-firebase/auth';
+import { firebase } from '@react-native-firebase/auth';
 
 import React from 'react';
 

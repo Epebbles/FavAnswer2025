@@ -86,26 +86,27 @@ interface AuthState {
 }
 
 
-let authStore = (set, get) => ({
+const authStore: StateCreator<AuthState> = (set, get) => ({
   initialized: true,
-  user: '',
+  user: null,
 
-  setUser: user => set({user}),
-  setInitialized: initialized => set({initialized}),
+  setUser: (user) => set({ user }),
+  setInitialized: (initialized) => set({ initialized }),
 
-  onAuthStateChanged: user => {
+  onAuthStateChanged: (user) => {
     get().setUser(user);
-    get().initialized && get().setInitialized(false);
+    if (get().initialized) {
+      get().setInitialized(false);
+    }
   },
-  registerWithEmail: async (email, password, confirmPassword) => {
+  registerWithEmail: async (email: string, password: string) => {
     try {
-      let response = await auth().createUserWithEmailAndPassword(
+      const response = await auth().createUserWithEmailAndPassword(
         email,
         password,
-        confirmPassword,
       );
       if (response) {
-        console.log('?', response);
+        console.log('User registered:', response);
       }
     } catch (e) {
       console.error(e.message);
@@ -115,73 +116,87 @@ let authStore = (set, get) => ({
     const subscriber = auth().onAuthStateChanged(get().onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   },
-  signOut: () => {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
+  signOut: async () => {
+    try {
+      await auth().signOut();
+      console.log('User signed out!');
+    } catch (e: any) {
+      console.error(e.message);
+    }
   },
 
   onGoogleButtonPress: async () => {
-    GoogleSignin.configure({
-      webClientId:
-        '282715649612-htl49k6v9pjp3arg1nlu9jt257u6ljto.apps.googleusercontent.com',
-    });
-    // Check if your device supports Google Play
-    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-    // Get the users ID token
-    const {idToken} = await GoogleSignin.signIn();
-
-    // Create a Google credential with the token
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
+    try {
+      GoogleSignin.configure({
+        webClientId: '282715649612-htl49k6v9pjp3arg1nlu9jt257u6ljto.apps.googleusercontent.com',
+      });
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      // Get the users ID token
+      const { idToken } = await GoogleSignin.signIn();
+      if (!idToken) throw new Error('Google Sign-In failed: No ID token returned');
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      // Sign-in the user with the credential
+      await auth().signInWithCredential(googleCredential);
+    } catch (e: any) {
+      console.error(e.message);
+    }
   },
 
   onAppleButtonPress: async () => {
-    // Start the sign-in request
-    const appleAuthRequestResponse = await appleAuth.performRequest({
-      requestedOperation: appleAuth.Operation.LOGIN,
-      requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-    });
-
-    // Ensure Apple returned a user identityToken
-    if (!appleAuthRequestResponse.identityToken) {
-      throw new Error('Apple Sign-In failed - no identify token returned');
+    try {
+      // Start the sign-in request
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+  
+      // Ensure Apple returned a user identityToken
+      if (!appleAuthRequestResponse.identityToken) {
+        throw new Error('Apple Sign-In failed - no identify token returned');
+      }
+  
+      // Create a Firebase credential from the response
+      const { identityToken, nonce } = appleAuthRequestResponse;
+      const appleCredential = auth.AppleAuthProvider.credential(
+        identityToken,
+        nonce,
+      );
+  
+      // Sign the user in with the credential
+      await auth().signInWithCredential(appleCredential);
+    } catch (e: any) {
+      console.error(e.message);
     }
-
-    // Create a Firebase credential from the response
-    const {identityToken, nonce} = appleAuthRequestResponse;
-    const appleCredential = auth.AppleAuthProvider.credential(
-      identityToken,
-      nonce,
-    );
-
-    // Sign the user in with the credential
-    return auth().signInWithCredential(appleCredential);
   },
 
   onFacebookButtonPress: async () => {
-    // Attempt login with permissions
-    const result = await LoginManager.logInWithPermissions([
-      'public_profile',
-      'email',
-    ]);
-    if (result.isCancelled) {
-      throw 'User cancelled the login process';
+    try {
+      // Attempt login with permissions
+      const result = await LoginManager.logInWithPermissions([
+        'public_profile',
+        'email',
+      ]);
+      if (result.isCancelled) {
+        throw 'User cancelled the login process';
+      }
+  
+      // Once signed in, get the users AccesToken
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) {
+        throw 'Something went wrong obtaining access token';
+      }
+  
+      // Create a Firebase credential with the AccessToken
+      const facebookCredential = auth.FacebookAuthProvider.credential(
+        data.accessToken,
+      );
+      // Sign-in the user with the credential
+      await auth().signInWithCredential(facebookCredential);
+    } catch (e: any) {
+      console.error(e.message);
     }
-
-    // Once signed in, get the users AccesToken
-    const data = await AccessToken.getCurrentAccessToken();
-    if (!data) {
-      throw 'Something went wrong obtaining access token';
-    }
-
-    // Create a Firebase credential with the AccessToken
-    const facebookCredential = auth.FacebookAuthProvider.credential(
-      data.accessToken,
-    );
-    // Sign-in the user with the credential
-    return auth().signInWithCredential(facebookCredential);
   },
 });
 

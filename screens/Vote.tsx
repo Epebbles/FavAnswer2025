@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -6,30 +6,45 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {firestore, TODAY} from '../firebaseconfig';
+import { firestore, TODAY } from '../firebaseconfig';
 import AnswerButton from '../components/Vote/AnswerButton';
 import NoVotes from '../components/Vote/NoVotes';
 import ReportAnswer from '../components/Vote/ReportAnswer';
 import Status from '../components/Status';
 import VoteButton from '../components/Vote/VoteButton';
-const Vote = ({navigation}) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentVotes, setCurrentTotalVotes] = useState(0);
+
+interface Answer {
+  id: string;
+  answer: string;
+  answerCreatorId: string;
+  answers_score: number;
+  isActive: boolean;
+}
+
+interface AnswerSelected {
+  answerId: number;
+  answer: Answer;
+}
+
+interface VoteProps {
+  navigation: any; // Replace 'any' with proper navigation type if using React Navigation
+}
+
+const Vote: React.FC<VoteProps> = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentVotes, setCurrentTotalVotes] = useState<number>(0);
   const TotalVotes = 10;
-  const [todaysQuestion, setTodaysQuestion] = useState([]);
-  const [todaysAnswers, setTodaysAnswers] = useState([]);
-  const [answerSelected, setAnswerSelected] = useState({
-    answerId: 0,
-    answer: {_id: 0, text: 'None selected yet'},
-  });
-  const [docRef, setDocRef] = useState([]);
-  const [leftAnswer, setLeftAnswer] = useState({text: 'loading...'});
-  const [rightAnswer, setRightAnswer] = useState({text: 'loading...'});
-  const [borderOne, setBorderOne] = useState(false);
-  const [borderTwo, setBorderTwo] = useState(false);
-  const [selected, setSelected] = useState(false);
-  const [noVotes, setNoVotes] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [todaysQuestion, setTodaysQuestion] = useState<string>('');
+  const [todaysAnswers, setTodaysAnswers] = useState<Answer[]>([]);
+  const [answerSelected, setAnswerSelected] = useState<AnswerSelected | null>(null);
+  const [docRef, setDocRef] = useState<string | null>(null);
+  const [leftAnswer, setLeftAnswer] = useState<Answer | null>(null);
+  const [rightAnswer, setRightAnswer] = useState<Answer | null>(null);
+  const [borderOne, setBorderOne] = useState<boolean>(false);
+  const [borderTwo, setBorderTwo] = useState<boolean>(false);
+  const [selected, setSelected] = useState<boolean>(false);
+  const [noVotes, setNoVotes] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
   const document = 'question_playDate';
 
   const getQuestionOfDay = async () => {
@@ -39,15 +54,15 @@ const Vote = ({navigation}) => {
         .where(document, '==', TODAY)
         .get();
 
-      const data = querySnapshot.docs.map(doc => doc.data());
+      const data = querySnapshot.docs.map((doc) => doc.data());
 
       // Check if there are any documents
       if (querySnapshot.docs.length === 0) {
         console.error('No documents found in the query snapshot');
         return; // Exit the function if no documents are found
-        }
+      }
 
-      const questionRef = querySnapshot.docs[0].ref._documentPath._parts[1];
+      const questionRef = querySnapshot.docs[0].ref.id;
       setDocRef(questionRef);
       setTodaysQuestion(data[0]?.question || 'No question available');
       getAnswersForQuestionOfDay();
@@ -55,7 +70,9 @@ const Vote = ({navigation}) => {
       console.error(error);
     }
   };
-  const getAnswersForQuestionOfDay = async () => {
+  const getAnswersForQuestionOfDay = async (): Promise<void> => {
+    if (!docRef) return;
+
     try {
       const querySnapshot = await firestore()
         .collection('Answers')
@@ -63,10 +80,11 @@ const Vote = ({navigation}) => {
         .where('isActive', '==', false)
         .get();
 
-      const extractedData = querySnapshot.docs.map(doc => {
-        const {answer, answerCreatorId, answers_score, isActive} = doc.data();
-        return {id: doc.id, answer, answerCreatorId, answers_score, isActive};
-      });
+      const extractedData: Answer[] = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }) as Answer);
+
       setTodaysAnswers(extractedData);
       // After fetching answers, handle the answers and set initial left and right answers
       handleAnswers(extractedData);
@@ -74,46 +92,33 @@ const Vote = ({navigation}) => {
       console.error(error);
     }
   };
-  const handleAnswers = answersList => {
+  const handleAnswers = (answersList: Answer[]): void => {
     if (answersList.length > 0) {
       setIsLoading(false);
-      let newAnswers = [];
-
-      for (let i = 0; i < 2; i++) {
-        let rand = Math.floor(Math.random() * answersList.length);
+      let newAnswers: Answer[] = [];
+      for (; newAnswers.length < 2 && answersList.length > 0;) {
+        const rand = Math.floor(Math.random() * answersList.length);
 
         //! Covering Edge Case for chances that same number is picked twice.
-        if (newAnswers.includes(answersList[rand])) {
-          //! Recursively make sure rand isn't the same
-          const handleRand = rand => {
-            rand = Math.floor(Math.random() * answersList.length);
-            if (newAnswers.includes(answersList[rand])) {
-              return handleRand(rand);
-            } else {
-              return rand;
-            }
-          };
-
-          rand = handleRand(rand);
-          newAnswers.push(answersList[rand]);
-        } else {
+        if (!newAnswers.includes(answersList[rand])) {
           newAnswers.push(answersList[rand]);
         }
       }
-
       setLeftAnswer(newAnswers[0]);
       setRightAnswer(newAnswers[1]);
     }
   };
 
   // Takes current list and removes the answer just submitted, then chooses a new random answer from the updates list
-  const newAnswer = () => {
-    let newList = todaysAnswers.filter(item => {
+  const newAnswer = (): void => {
+    if (!answerSelected) return;
+
+    const newList = todaysAnswers.filter((item) => {
       console.log(
         '🚀 ~ file: Vote.jsx:97 ~ newList ~ answerSelected:',
         answerSelected,
       );
-      return item?.answer !== answerSelected?.answer.answer;
+      return item.answer !== answerSelected.answer.answer;
     });
 
     if (newList.length < 2 && currentVotes !== TotalVotes) {
@@ -136,75 +141,68 @@ const Vote = ({navigation}) => {
 
     let rand = Math.floor(Math.random() * newList.length);
     if (answerSelected.answerId === 1) {
-      if (newList[rand] === rightAnswer) {
-        if (rand === newList.length - 1) {
-          rand = 0;
-        } else {
-          rand++;
-        }
-      }
       setLeftAnswer(newList[rand]);
-    }
-    if (answerSelected.answerId === 2) {
-      if (newList[rand] === leftAnswer) {
-        if (rand === newList.length - 1) {
-          rand = 0;
-        } else {
-          rand++;
-        }
-      }
+    } else {
       setRightAnswer(newList[rand]);
     }
     setTodaysAnswers(newList);
   };
 
   // checks if there are any votes left for the user to use, if not, popup shows up
-  const handleVote = () => {
-    currentVotes < TotalVotes
-      ? setCurrentTotalVotes(currentVotes + 1) + reset() + newAnswer()
-      : setNoVotes(true);
+  const handleVote = (): void => {
+    if (currentVotes < TotalVotes) {
+      setCurrentTotalVotes((prev) => prev + 1);
+      reset();
+      newAnswer();
+    } else {
+      setNoVotes(true);
+    }
   };
 
   // Submit hasn't been completed yet, once we plug backend in, this will change
-  const handleSelection = (answerId, answer) => {
-    currentVotes === TotalVotes
-      ? handleVote()
-      : answerId === 1
-      ? setBorderOne(true) +
-        setBorderTwo(false) +
-        setSelected(true) +
-        setAnswerSelected({answerId, answer: leftAnswer})
-      : answerId === 2
-      ? setBorderTwo(true) +
-        setBorderOne(false) +
-        setSelected(true) +
-        setAnswerSelected({answerId, answer: rightAnswer})
-      : '';
+  const handleSelection = (answerId: number, answer: Answer): void => {
+    if (currentVotes === TotalVotes) {
+      handleVote();
+      return;
+    }
+
+    if (answerId === 1) {
+      setBorderOne(true);
+      setBorderTwo(false);
+      setSelected(true);
+      setAnswerSelected({ answerId, answer: leftAnswer! });
+    } else {
+      setBorderTwo(true);
+      setBorderOne(false);
+      setSelected(true);
+      setAnswerSelected({ answerId, answer: rightAnswer! });
+    }
   };
 
   // resets any choices made and diables vote button
-  const reset = () => {
-    setSelected(false) + setBorderOne(false) + setBorderTwo(false);
+  const reset = (): void => {
+    setSelected(false);
+    setBorderOne(false);
+    setBorderTwo(false);
   };
 
   // after submitted offense to specific answer, we will send the information here
-  const handleReport = (answer, reason) => {
+  const handleReport = (answer: Answer, reason: { reason: string }): void => {
     reset();
     setVisible(false);
+
     answer.answer === leftAnswer.answer
-      ? alert(
-          `Left Answer: This answer was reported: ${answer.answer} with this reason: ${reason.reason}`,
-        ) +
-        setAnswerSelected({answerId: 1, answer: leftAnswer}) +
-        newAnswer()
-      : answer.answer === rightAnswer.answer
-      ? alert(
-          `Right Answer: This answer was reported: ${answer.answer} with this reason: ${reason.reason}`,
-        ) +
-        setAnswerSelected({answerId: 2, answer: rightAnswer}) +
-        newAnswer()
-      : alert('Something incredibly weird just happened');
+    if (answer.answer === leftAnswer?.answer) {
+      alert(`Left Answer Reported: ${answer.answer} Reason: ${reason.reason}`);
+      setAnswerSelected({ answerId: 1, answer: leftAnswer });
+      newAnswer();
+    } else {
+      alert(`Right Answer Reported: ${answer.answer} Reason: ${reason.reason}`);
+      setAnswerSelected({ answerId: 2, answer: rightAnswer });
+      newAnswer();
+    }
   };
+
   useEffect(() => {
     getQuestionOfDay();
   }, []);
@@ -213,6 +211,7 @@ const Vote = ({navigation}) => {
       getAnswersForQuestionOfDay();
     }
   }, [docRef]);
+
   return (
     <View style={styles.container}>
       {/* <View style={styles.header}>
@@ -270,7 +269,7 @@ const Vote = ({navigation}) => {
               <Text
                 style={[
                   styles.reportText,
-                  {color: currentVotes === 10 ? 'gray' : '#0d90fc'},
+                  { color: currentVotes === 10 ? 'gray' : '#0d90fc' },
                 ]}>
                 Offensive Answer?
               </Text>

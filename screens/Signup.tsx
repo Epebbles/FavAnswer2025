@@ -9,6 +9,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
 import EmailRegister from '../components/Reg/EmailReg2';
 import RegisterButton from '../components/Reg/RegisterButton';
@@ -16,9 +17,11 @@ import RegisterButton from '../components/Reg/RegisterButton';
 // import Icon from 'react-native-vector-icons/FontAwesome'
 // import { useAnimatedStyle, Animated } from 'react-native-reanimated'
 
+type HomeProps = {
+  navigation: NavigationProp<any>; // Replace `any` with your stack type for better safety
+};
 
-
-const Home = ({navigation}) => {
+const Home: React.FC<HomeProps> = ({navigation}) => {
   const handleRegister = () => {
     navigation.navigate('Register');
   };
