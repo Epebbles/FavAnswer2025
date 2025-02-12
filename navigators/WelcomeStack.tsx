@@ -3,8 +3,8 @@ import 'react-native-gesture-handler';
 import { Button, Image, StyleSheet, Text } from 'react-native';
 import React, {useEffect, useState} from 'react';
 
-import Home from '../screens/Home';
-import Intro from '../screens/Intro';
+//import Home from '../screens/Home';
+import Intro from '../screens/AppIntro';
 import Register from '../screens/Register';
 import Signup from '../screens/Signup';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -48,10 +48,10 @@ const WelcomeStack = () => {
                     headerLeft: () => (<Button title="Skip" onPress={()=> navigation.navigate('Home')}/>),
             })}/>
 
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="Home"
                 component={Home}
-                options={{headerShown: false}}/>
+                options={{headerShown: false}}/> */}
 
             <Stack.Screen
                 name="Sign up"

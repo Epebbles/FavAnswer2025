@@ -4,7 +4,7 @@ import {Image, StyleSheet, Text} from 'react-native';
 
 import AboutUs from '../components/Learn/AboutUs';
 import BottomNav from '../components/BottomNav';
-import DailyLeaderboard from '../components/Leaderboard/DailyLeaderboard2';
+import DailyLeaderboard from '../components/LeaderAll/DailyLeaderboard2';
 import HowToPlay from '../components/Learn/HowToPlay';
 import PrivacyPolicy from '../components/Learn/PrivacyPolicy';
 import React from 'react';
@@ -33,7 +33,7 @@ const AuthStack = () => {
                     headerStyle: {
                         backgroundColor: 'white',
                     },
-                    headerTitle: `${today.toLocaleString('en-US', options)}`,
+                    headerTitle: `${today.toLocaleString('en-US')}`,
                 }}
             />
 {/* The remaining screens below are attached to the "Learn" section within BottonNav, the layout is built but as to what it says, we got work to do! */}
