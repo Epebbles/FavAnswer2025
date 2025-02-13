@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import {useAuthStore} from '../../store';
-import {useProfileStore} from '../../store';
+import { useAuthStore } from '../../store';
+import { useProfileStore } from '../../store';
 
 type EmailReg2Props = {
   navigation: NavigationProp<any>; // Replace `any` with a more specific navigation type if available
 };
 
-const EmailReg2: React.FC<EmailReg2Props> = ({navigation}) => {
+const EmailReg2: React.FC<EmailReg2Props> = ({ navigation }) => {
   const [regEmail, setRegEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [confirmPassword, setConfirmPassword] = useState<string>();
-  
-  const {registerWithEmail} = useAuthStore();
-  const {setEmail, setFName, setLName, setProfilePic} = useProfileStore();
+
+  const { registerWithEmail } = useAuthStore();
+  const { setEmail, setFName, setLName, setProfilePic } = useProfileStore();
 
   const updateProfile = (userData: any, isNewUser: boolean) => {
     if (!userData) return;
@@ -32,7 +32,7 @@ const EmailReg2: React.FC<EmailReg2Props> = ({navigation}) => {
   const handleRegister = async () => {
     if (password !== confirmPassword || !password) return;
     try {
-      const u = await registerWithEmail(regEmail, password);
+      const u = await registerWithEmail(regEmail, password); //Where is additionalUserInfo coming from? It's not the store
       if (u?.additionalUserInfo?.profile) {
         updateProfile(u.additionalUserInfo.profile, u.additionalUserInfo.isNewUser);
       }
@@ -193,4 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#0d90fc',
   },
+  view: {
+    padding: 1
+  }
 });

@@ -17,7 +17,7 @@ const WelcomeStack = () => {
     let routeName;
 
     useEffect(() => {
-        AsyncStorage.getItem('alreadyLaunched').then((value) => {
+        AsyncStorage.getItem('alreadyLaunched').then((value) => { //AsyncStorage removed from React Native
             if (value == null) {
                 AsyncStorage.setItem('alreadyLaunched', 'true');
                 setIsFirstLaunch(true);

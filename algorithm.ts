@@ -90,13 +90,13 @@ function timeChanger(x) {
     hour12: false, // Display the time in 24-hour format
     hour: 'numeric',
   };
-  if (d.toLocaleString('en-US', options) <= 12) {
+  if (d.toLocaleString('en-US') <= 12) { //logic error
     return x;
-  } else if (d.toLocaleString('en-US', options) > 12) {
+  } else if (d.toLocaleString('en-US') > 12) { 
     return x.slice(0, x.length / 2);
-  } else if (d.toLocaleString('en-US', options) > 21) {
+  } else if (d.toLocaleString('en-US') > 21) {
     return x.slice(0, x.length / 3);
-  } else if (d.toLocaleString('en-US', options) > 23) {
+  } else if (d.toLocaleString('en-US') > 23) {
     return x.slice(0, x.length / 4);
   }
 }

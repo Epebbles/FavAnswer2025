@@ -48,7 +48,7 @@ const Home = ({navigation}) => {
   const onGooglePress = () => {
     onGoogleButtonPress().then(u => {
       updateProfile(
-        u.additionalUserInfo.profile,
+        u.additionalUserInfo.profile, //Where is additionalUserInfo coming from? It's not the store
         u.additionalUserInfo.isNewUser,
       );
     });

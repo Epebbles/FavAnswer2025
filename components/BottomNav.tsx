@@ -30,8 +30,9 @@ const BottomNav: React.FC = () => {
   return (
     <NavigationContainer>
     <Tab.Navigator
+      // id: { undefined } // Tab.Navigator or id is an error
       initialRouteName="Vote"
-      screenOptions={{
+      screenOptions={{ 
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#f36b26',
@@ -43,7 +44,6 @@ const BottomNav: React.FC = () => {
           paddingTop: 5,
           borderTopWidth: 3,
         },
-        // id={undefined}, // Tab.Navigator or id is an error
         headerTitle: () => <HeaderBanner Title="" />,
         headerTitleContainerStyle: {marginBottom: 15},
         headerStyle: {height: 120},

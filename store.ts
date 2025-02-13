@@ -1,7 +1,7 @@
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { create, StateCreator } from 'zustand';
 
 // ✅ Define types for Profile Store
@@ -113,7 +113,7 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
     }
   },
   subscribe: () => {
-    const subscriber = auth().onAuthStateChanged(get().onAuthStateChanged);
+    const subscriber = auth().onAuthStateChanged(get().onAuthStateChanged); //something to do with firebase/firestore auth
     return subscriber; // unsubscribe on unmount
   },
   signOut: async () => {
@@ -133,7 +133,7 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
       // Check if your device supports Google Play
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       // Get the users ID token
-      const { idToken } = await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.signIn(); // something about the GoogleSignin API
       if (!idToken) throw new Error('Google Sign-In failed: No ID token returned');
       // Create a Google credential with the token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
