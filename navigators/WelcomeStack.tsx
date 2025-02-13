@@ -36,7 +36,7 @@ const WelcomeStack = () => {
     }
 
     return (
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Home" id={undefined}>
             <Stack.Screen name="Intro"
                 component={Intro}
                 options={({navigation})=> ({

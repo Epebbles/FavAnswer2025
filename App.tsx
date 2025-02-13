@@ -1,7 +1,7 @@
 
 // export default App;
 import 'react-native-gesture-handler';
-import {Button, Image, StyleSheet} from 'react-native';
+import { Button, Image, StyleSheet } from 'react-native';
 
 import HeaderBanner from './components/HeaderBanner';
 // import Providers from './navigators';
@@ -32,26 +32,26 @@ const App: React.FC = () => {
   const today = new Date();
 
   const options: Intl.DateTimeFormatOptions = {
-    year :'numeric',
-    month : 'short',
-    day : 'numeric',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   };
 
 
-  {/* Each Stack.Screen represents a screen to navigate to */}
+  {/* Each Stack.Screen represents a screen to navigate to */ }
 
 
   return (
     // <Providers />
     <NavigationContainer>
-      <Stack.Navigator >
-{/* Splash screen should show automatically */}
+      <Stack.Navigator id={undefined}>
+        {/* Splash screen should show automatically */}
         {/* <Stack.Screen
           name="Splash"
           component={Splash}
           options={{headerShown: false}}
         /> */}
-{/* Intro page carries the FlatList (Carousel in HTML5/Javascript) in which we can have people scroll through the introduction pages*/}
+        {/* Intro page carries the FlatList (Carousel in HTML5/Javascript) in which we can have people scroll through the introduction pages*/}
         <Stack.Screen
           name="Intro"
           component={Intro}
@@ -60,20 +60,20 @@ const App: React.FC = () => {
             headerStyle: { backgroundColor: '#ECECEC' },
             headerTitle: '',
           }}
-          />
-{/* Home page is the page for users to sign in, you can rename if you please, just make sure all names match to avoid errors! */}
+        />
+        {/* Home page is the page for users to sign in, you can rename if you please, just make sure all names match to avoid errors! */}
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{headerShown: false}}/>
+          options={{ headerShown: false }} />
 
 
-{/* In React Native, the Bottom Navigator is its own screen and within it, we attach the different component pages respresenting the different "Pages", ex: Vote, Play, Leaderboard, Profile, Learn. PLEASE DO NOT add any other the mentioned "Pages" to this file,you will cause an infinite loop that will crash the app. */}
+        {/* In React Native, the Bottom Navigator is its own screen and within it, we attach the different component pages respresenting the different "Pages", ex: Vote, Play, Leaderboard, Profile, Learn. PLEASE DO NOT add any other the mentioned "Pages" to this file,you will cause an infinite loop that will crash the app. */}
         <Stack.Screen
           name="BottomNav"
           component={BottomNav}
-          options={{headerShown: false}}
-          />
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Sign up"
           component={Signup}
@@ -86,17 +86,17 @@ const App: React.FC = () => {
         <Stack.Screen
           name="Register"
           component={Register}
-          options={({navigation}) => ({
+          options={({ navigation }) => ({
             headerBackTitle: 'Back',
             headerTitle: () => <HeaderBanner />,
-            headerStyle: {height: 105},
+            headerStyle: { height: 105 },
             headerTitleAlign: 'center',
             headerShadowVisible: false,
             headerRight: () => (
-              <Button title="Done" onPress={() => navigation.navigate('BottomNav')}/>),
+              <Button title="Done" onPress={() => navigation.navigate('BottomNav')} />),
           })}
         />
-{/* Bacause the "Leaderboard" is separate from the section about todays leaders, we can add this to this screen navigation and just import it to the "Leaderboard" component */}
+        {/* Bacause the "Leaderboard" is separate from the section about todays leaders, we can add this to this screen navigation and just import it to the "Leaderboard" component */}
         <Stack.Screen
           name="Today"
           component={DailyLeaderboard}
@@ -113,7 +113,7 @@ const App: React.FC = () => {
             headerTitle: `${today.toLocaleString('en-US', options)}`,
           }}
         />
-{/* The remaining screens below are attached to the "Learn" section within BottonNav, the layout is built but as to what it says, we got work to do! */}
+        {/* The remaining screens below are attached to the "Learn" section within BottonNav, the layout is built but as to what it says, we got work to do! */}
         <Stack.Screen
           name="How to Play"
           component={HowToPlay}
@@ -123,9 +123,9 @@ const App: React.FC = () => {
             },
             headerShadowVisible: false,
             headerTitle: () => (
-            <Image
-              style={styles.image}
-              source={require('./assets/Images/FavAnswerLogoTwo.png')}/>),
+              <Image
+                style={styles.image}
+                source={require('./assets/Images/FavAnswerLogoTwo.png')} />),
           }}
         />
         <Stack.Screen
@@ -134,7 +134,7 @@ const App: React.FC = () => {
           options={{
             headerBackTitle: 'Back',
             headerTitle: () => <HeaderBanner />,
-            headerStyle: {height: 105},
+            headerStyle: { height: 105 },
             headerTitleAlign: 'center',
             headerShadowVisible: false,
           }}
@@ -145,7 +145,7 @@ const App: React.FC = () => {
           options={{
             headerBackTitle: 'Back',
             headerTitle: () => <HeaderBanner />,
-            headerStyle: {height: 105},
+            headerStyle: { height: 105 },
             headerTitleAlign: 'center',
             headerShadowVisible: false,
           }}
@@ -156,7 +156,7 @@ const App: React.FC = () => {
           options={{
             headerBackTitle: 'Back',
             headerTitle: () => <HeaderBanner />,
-            headerStyle: {height: 105},
+            headerStyle: { height: 105 },
             headerTitleAlign: 'center',
             headerShadowVisible: false,
           }}
@@ -167,7 +167,7 @@ const App: React.FC = () => {
           options={{
             headerBackTitle: 'Back',
             headerTitle: () => <HeaderBanner />,
-            headerStyle: {height: 105},
+            headerStyle: { height: 105 },
             headerTitleAlign: 'center',
             headerShadowVisible: false,
           }}
@@ -183,9 +183,9 @@ const App: React.FC = () => {
 export default App;
 
 const styles = StyleSheet.create({
-  image : {
-      width: 180,
-      height: 40,
-      marginBottom: 10,
+  image: {
+    width: 180,
+    height: 40,
+    marginBottom: 10,
   },
 });

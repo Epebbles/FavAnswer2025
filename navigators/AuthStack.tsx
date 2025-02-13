@@ -24,7 +24,7 @@ const options = {
 
 const AuthStack = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator id={undefined}>
             <Stack.Screen name="BottomNav" component={BottomNav} options={{headerShown: false}}/>
             <Stack.Screen
                 name="Today"

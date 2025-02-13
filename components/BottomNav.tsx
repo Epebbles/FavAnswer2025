@@ -43,6 +43,7 @@ const BottomNav: React.FC = () => {
           paddingTop: 5,
           borderTopWidth: 3,
         },
+        // id={undefined}, // Tab.Navigator or id is an error
         headerTitle: () => <HeaderBanner Title="" />,
         headerTitleContainerStyle: {marginBottom: 15},
         headerStyle: {height: 120},
