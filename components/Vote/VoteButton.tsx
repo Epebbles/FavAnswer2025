@@ -1,7 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-const VoteButton = ({vote, access}) => {
+interface VoteButtonProps {
+    vote: () => void;
+    access: boolean;
+  }
+
+const VoteButton:React.FC<VoteButtonProps> = ({vote, access}) => {
     return (
         <TouchableOpacity
                 activeOpacity={0.8}
@@ -10,7 +15,7 @@ const VoteButton = ({vote, access}) => {
                     {backgroundColor: access ? '#0d90fc' : '#f4f4f4'},
                 ]}
                 onPress={vote}
-                disabled={access ? false : true}
+                disabled={!access}
             >
             <Text
                 style={[

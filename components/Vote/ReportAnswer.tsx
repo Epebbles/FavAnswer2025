@@ -6,27 +6,29 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import SegmentedPicker from 'react-native-segmented-picker';
-import ReportReasonList from './OptionLists/ReportReasonList';
+import React, {useState, useEffect} from 'react';
 import AnswerButton from './AnswerButton';
 
-const ReportAnswer = ({visible, answers, cancel, report}) => {
-  const [answersToReport, setAnswersToReport] = useState([
-    'loading...',
-    'loading...',
-  ]);
-  const [answerSelected, setAnswerSelected] = useState('');
-  const [reason, setReason] = useState('');
-  const [isVisible, setIsVisible] = useState();
-  const [answerVisible, setAnswerVisible] = useState(false);
-  const [listVisible, setListVisible] = useState(false);
-  const [borderOne, setBorderOne] = useState(false);
-  const [borderTwo, setBorderTwo] = useState(false);
-  const [selected, setSelected] = useState(false);
+interface ReportAnswerProps {
+  visible: boolean;
+  answers: string[];
+  cancel: () => void;
+  report: (answerSelected: string, reason: string) => void;
+}
 
-  const answerRef = useRef(null);
-  const reasonRef = useRef(null);
+const ReportAnswer:React.FC<ReportAnswerProps> = ({visible, answers, cancel, report}) => {
+  const [answersToReport, setAnswersToReport] = useState<string[]>([
+    'loading...',
+    'loading...'
+  ]);
+  const [answerSelected, setAnswerSelected] = useState<string>('');
+  const [reason, setReason] = useState<string>('');
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [answerVisible, setAnswerVisible] = useState<boolean>(false);
+  const [listVisible, setListVisible] = useState<boolean>(false);
+  const [borderOne, setBorderOne] = useState<boolean>(false);
+  const [borderTwo, setBorderTwo] = useState<boolean>(false);
+  const [selected, setSelected] = useState<boolean>(false);
 
   useEffect(() => {
     setAnswersToReport(answers);
@@ -40,9 +42,11 @@ const ReportAnswer = ({visible, answers, cancel, report}) => {
   };
 
   const handleReport = () => {
-    report(answerSelected, reason);
-    setAnswerSelected('');
-    setReason('');
+    if (answerSelected && reason){
+      report(answerSelected, reason);
+      setAnswerSelected('');
+      setReason('');
+    }
   };
   // Submit hasn't been completed yet, once we plug backend in, this will change
   const handleSelection = (answerId, answer) => {
@@ -57,7 +61,9 @@ const ReportAnswer = ({visible, answers, cancel, report}) => {
 
   // resets any choices made and diables vote button
   const reset = () => {
-    setSelected(false) + setBorderOne(false) + setBorderTwo(false);
+    setSelected(false); 
+    setBorderOne(false); 
+    setBorderTwo(false);
   };
 
   return (
@@ -103,8 +109,8 @@ const ReportAnswer = ({visible, answers, cancel, report}) => {
           <View style={styles.hr} />
           <View style={styles.footer}>
             <View style={styles.space}>
-              <TouchableOpacity activeOpacity={0.4} onPress={handleReport}>
-                <Text style={styles.reportButton}>Submit</Text>
+              <TouchableOpacity activeOpacity={0.4} onPress={handleReport} disabled={!selected}>
+                <Text style={[styles.reportButton, !selected && styles.disabledButton]}>Submit</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -191,6 +197,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 22,
     marginBottom: 15,
+    marginLeft: 20,
+    width: '60%',
   },
   row: {
     flex: 1,
@@ -206,10 +214,6 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 18,
     textAlign: 'left',
-  },
-  answer: {
-    marginLeft: 20,
-    width: '60%',
   },
   reason: {
     marginLeft: 20,
@@ -230,4 +234,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#0d90fc',
   },
+  disabledButton: {
+    color: 'gray',
+  }
 });

@@ -3,8 +3,16 @@ import React, { useState, useRef, useEffect } from 'react';
 
 // To view how this is done, here is the video: https://www.youtube.com/watch?v=J95MC2Koymc
 
-const Status = ({height, backColor, statusColor, current, total}) => {
-    const [width, setWidth] = useState(0);
+interface StatusProps {
+    height: number;
+    backColor: string;
+    statusColor: string;
+    current: number;
+    total: number;
+  }
+
+const Status: React.FC<StatusProps> = ({height, backColor, statusColor, current, total}) => {
+    const [width, setWidth] = useState<number>(0);
     const animatedValue = useRef(new Animated.Value(-1000)).current;
     const reactive = useRef(new Animated.Value(-1000)).current;
 
@@ -18,14 +26,11 @@ const Status = ({height, backColor, statusColor, current, total}) => {
 
     useEffect(()=> {
         reactive.setValue(-width + (width * current) / total);
-    },[current, width]);
+    },[current, width, total]);
 
     return (
             <View
-                onLayout={e => {
-                    const newWidth = e.nativeEvent.layout.width;
-                    setWidth(newWidth);
-                }}
+                onLayout={e => setWidth(e.nativeEvent.layout.width)}
                 style={[
                     styles.bar,
                     {

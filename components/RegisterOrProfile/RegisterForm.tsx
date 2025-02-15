@@ -28,7 +28,22 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native';
 import {useProfileStore} from '../../store';
 
-const RegisterForm = ({
+interface RegisterFormProps {
+  type: string;
+  initialProfilePic: string;
+  initialFName: string;
+  initialLName: string;
+  initialCities: string;
+  initialGender: string;
+  initialAge: { month: string; day: string; year: string };
+  initialMaritalStatus: string;
+  initialEducation: string;
+  initialFavAnimal: string;
+  initialFavFood: string;
+  initialCharity: string;
+}
+
+const RegisterForm:React.FC<RegisterFormProps> = ({
   type,
   initialProfilePic,
   initialFName,
@@ -55,13 +70,28 @@ const RegisterForm = ({
   const [charity, setCharity] = useState(initialCharity);
   const [profileUri, setProfileUri] = useState(initialProfilePic);
 
-  const genderRef = useRef(null);
-  const dobRef = useRef(null);
-  const msRef = useRef(null);
-  const edRef = useRef(null);
+  const genderRef = useRef<any>(null);
+  const dobRef = useRef<any>(null);
+  const msRef = useRef<any>(null);
+  const edRef = useRef<any>(null);
 
   const navigation = useNavigation();
   const profileStore = useProfileStore();
+
+  const handleChoosePhoto = () => {
+    const options = {
+      mediaType: 'photo',
+    };
+    launchImageLibrary(options, response => { //pick options
+      if (response.assets) {
+        setProfilePic(response.assets[0].uri);
+        setProfileUri(response.assets[0].uri);
+      } else {
+        setProfilePic(null);
+        setProfileUri('');
+      }
+    });
+  };
 
   const InputName = ({
     text,
@@ -224,24 +254,11 @@ const RegisterForm = ({
     );
   };
 
-  const handleChoosePhoto = () => {
-    const options = {
-      mediaType: 'photo',
-    };
-    launchImageLibrary(options, response => {
-      if (response.assets) {
-        setProfilePic(response.assets[0]);
-        setProfileUri(response.assets[0].uri);
-      } else {
-        setProfilePic(null);
-        setProfileUri('');
-      }
-    });
-  };
+  
 
   const inputList = [
     {
-      title: 'We don’t share any info outside of the app',
+      title: "We don't share any info outside of the app",
       components: [
         {
           type: type,
@@ -357,19 +374,6 @@ const RegisterForm = ({
     },
   ];
 
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <Button
-  //         title='Done'
-  //         onPress={() => {
-  //           navigation.navigate('BottomNav')
-  //         }}
-  //       />
-  //     ),
-  //   })
-  // }, [])
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.sections}>
@@ -435,35 +439,6 @@ const RegisterForm = ({
                 return (
                   <Fragment key={idx}>
                     <View style={styles.hrI} />
-                    {/* {component.text === 'ZIP Code' ? (
-                      <InputNumber
-                        text={component.text}
-                        type={component.type}
-                        key={component.placeholder}
-                        required={component.required}
-                        maxLength={component.maxLength}
-                        setMyState={component.setMyState}
-                        value={component.value}
-                        placeholder={component.placeholder}
-                        idx={idx}
-                        ref={component.ref}
-                      />
-                    ) : (
-                      <InputWSegmentPicker
-                        type={component.type}
-                        text={component.text}
-                        required={component.required}
-                        selection={component.selection}
-                        onPress={component.onPress}
-                        myState={component.myState}
-                        setMyState={component.setMyState}
-                        placeholder={component.placeholder}
-                        Seg={component.Seg}
-                        list={component.list}
-                        idx={idx}
-                      />
-                    )} */}
-
                     <InputWSegmentPicker
                         type={component.type}
                         text={component.text}
@@ -606,4 +581,7 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 20,
   },
+  sections: {
+    padding: 1
+  }
 });

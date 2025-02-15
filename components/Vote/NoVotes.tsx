@@ -1,8 +1,15 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { NavigationProp } from '@react-navigation/native';
 
-const NoVotes = ({visible, cancel, navigation}) => {
-    const [isVisible, setIsVisible] = useState();
+interface NoVotesProps {
+    visible: boolean;
+    cancel: () => void;
+    navigation: NavigationProp<any>; // Adjust the type based on your navigation stack
+  }
+
+const NoVotes: React.FC<NoVotesProps> = ({visible, cancel, navigation}) => {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
 
     useEffect(() => {
         setIsVisible(visible);
@@ -28,15 +35,27 @@ const NoVotes = ({visible, cancel, navigation}) => {
                     <View style={styles.hr}/>
                     <View style={styles.footer}>
                         <View style={styles.space}>
-                            <TouchableOpacity activeOpacity={0.4} onPress={() => cancel() + navigation.navigate('Leaderboard')}>
-                                <Text style={[styles.nextButton, styles.leaderboardText]}>Results</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.line}/>
-                        <View style={styles.space}>
-                            <TouchableOpacity activeOpacity={0.4} onPress={() => cancel() + navigation.navigate('Play')}>
-                                <Text style={[styles.nextButton, styles.playText]}>Play</Text>
-                            </TouchableOpacity>
+                        <TouchableOpacity
+                activeOpacity={0.4}
+                onPress={() => {
+                  cancel();
+                  navigation.navigate('Leaderboard');
+                }}
+              >
+                <Text style={[styles.nextButton, styles.leaderboardText]}>Results</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.space}>
+              <TouchableOpacity
+                activeOpacity={0.4}
+                onPress={() => {
+                  cancel();
+                  navigation.navigate('Play');
+                }}
+              >
+                <Text style={[styles.nextButton, styles.playText]}>Play</Text>
+              </TouchableOpacity>
                         </View>
                     </View>
                 </View>

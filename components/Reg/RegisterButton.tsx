@@ -1,7 +1,13 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image, ImageSourcePropType} from 'react-native';
 import React from 'react';
 
-const RegisterButton = ({
+interface RegisterButtonProps {
+  image: ImageSourcePropType;
+  text: string;
+  handlePress: () => void;
+}
+
+const RegisterButton: React.FC<RegisterButtonProps> = ({
   image,
   text,
   handlePress,

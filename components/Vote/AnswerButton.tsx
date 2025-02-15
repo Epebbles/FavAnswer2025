@@ -3,7 +3,20 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
 
-const AnswerButton = ({
+interface Answer {
+  text?: string;
+}
+
+interface AnswerButtonProps {
+  answer: Answer | string;
+  select: (id: string, answer: Answer | string) => void;
+  unSelect: () => void;
+  clicked: boolean;
+  answerId: string;
+  fontSize: number;
+}
+
+const AnswerButton: React.FC<AnswerButtonProps> = ({
   answer,
   select,
   unSelect,
@@ -11,8 +24,8 @@ const AnswerButton = ({
   answerId,
   fontSize,
 }) => {
-  const [border, setBorder] = useState(false);
-  const [answerItem, setAnswerItem] = useState();
+  const [border, setBorder] = useState<boolean>(false);
+  const [answerItem, setAnswerItem] = useState<Answer | string>();
 
   useEffect(() => {
     setAnswerItem(answer);
@@ -33,9 +46,9 @@ const AnswerButton = ({
           numberOfLines={11}
           style={[styles.appButtonText, {fontSize: fontSize}]}>
           {answerItem
-            ? answerItem.text
-              ? answerItem.text
-              : answerItem
+            ? typeof answerItem === 'string'
+              ? answerItem
+              : answerItem.text ?? 'loading...'
             : 'loading...'}
         </Text>
       </TouchableOpacity>
