@@ -1,118 +1,191 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
 
+// export default App;
+import 'react-native-gesture-handler';
+import { Button, Image, StyleSheet } from 'react-native';
+
+import HeaderBanner from './components/HeaderBanner';
+// import Providers from './navigators';
+import AboutUs from './components/Learn/AboutUs';
+import BottomNav from './components/BottomNav';
+import DailyLeaderboard from './components/LeaderAll/DailyLeaderboard';
+import Home from './screens/Reg';
+import HowToPlay from './components/Learn/HowToPlay';
+import Intro from './screens/AppIntro';
+import PrivacyPolicy from './components/Learn/PrivacyPolicy';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Register from './screens/Register';
+import Signup from './screens/Signup';
+import Splash from './screens/Splash';
+import SuggestionsFeedback from './components/Learn/SuggestionsFeedback';
+import TermsConditions from './components/Learn/TermsConditions';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, StackNavigationOptions, StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from './components/types';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+// source code for react native navigation: https://reactnative.dev/docs/navigation
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const Stack = createStackNavigator<RootStackParamList>();
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App: React.FC = () => {
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const today = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+  {/* Each Stack.Screen represents a screen to navigate to */ }
+
+
+  return (
+    // <Providers />
+    <NavigationContainer>
+      <Stack.Navigator id={undefined}>
+        {/* Splash screen should show automatically */}
+        {/* <Stack.Screen
+          name="Splash"
+          component={Splash}
+          options={{headerShown: false}}
+        /> */}
+        {/* Intro page carries the FlatList (Carousel in HTML5/Javascript) in which we can have people scroll through the introduction pages*/}
+        <Stack.Screen
+          name="Intro"
+          component={Intro}
+          options={{
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: '#ECECEC' },
+            headerTitle: '',
+          }}
+        />
+        {/* Home page is the page for users to sign in, you can rename if you please, just make sure all names match to avoid errors! */}
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }} />
+
+
+        {/* In React Native, the Bottom Navigator is its own screen and within it, we attach the different component pages respresenting the different "Pages", ex: Vote, Play, Leaderboard, Profile, Learn. PLEASE DO NOT add any other the mentioned "Pages" to this file,you will cause an infinite loop that will crash the app. */}
+        <Stack.Screen
+          name="BottomNav"
+          component={BottomNav}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Sign up"
+          component={Signup}
+          options={{
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: 'white' },
+            headerTitle: 'Sign up with Email',
+          }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={({ navigation }) => ({
+            headerBackTitle: 'Back',
+            headerTitle: () => <HeaderBanner />,
+            headerStyle: { height: 105 },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+            headerRight: () => (
+              <Button title="Done" onPress={() => navigation.navigate('BottomNav')} />),
+          })}
+        />
+        {/* Bacause the "Leaderboard" is separate from the section about todays leaders, we can add this to this screen navigation and just import it to the "Leaderboard" component */}
+        <Stack.Screen
+          name="Today"
+          component={DailyLeaderboard}
+          initialParams={{
+            date: new Date().toISOString(),
+            question: 'Default Question?',
+            responses: [],
+            currentUserID: 12,
+          }}
+          options={{
+            headerStyle: {
+              backgroundColor: 'white',
+            },
+            headerTitle: `${today.toLocaleString('en-US', options)}`,
+          }}
+        />
+        {/* The remaining screens below are attached to the "Learn" section within BottonNav, the layout is built but as to what it says, we got work to do! */}
+        <Stack.Screen
+          name="How to Play"
+          component={HowToPlay}
+          options={{
+            headerStyle: {
+              backgroundColor: 'white',
+            },
+            headerShadowVisible: false,
+            headerTitle: () => (
+              <Image
+                style={styles.image}
+                source={require('./assets/Images/FavAnswerLogoTwo.png')} />),
+          }}
+        />
+        <Stack.Screen
+          name="About Us"
+          component={AboutUs}
+          options={{
+            headerBackTitle: 'Back',
+            headerTitle: () => <HeaderBanner />,
+            headerStyle: { height: 105 },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="Terms & Conditions"
+          component={TermsConditions}
+          options={{
+            headerBackTitle: 'Back',
+            headerTitle: () => <HeaderBanner />,
+            headerStyle: { height: 105 },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="Privacy Policy"
+          component={PrivacyPolicy}
+          options={{
+            headerBackTitle: 'Back',
+            headerTitle: () => <HeaderBanner />,
+            headerStyle: { height: 105 },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="Suggestions & Feedback"
+          component={SuggestionsFeedback}
+          options={{
+            headerBackTitle: 'Back',
+            headerTitle: () => <HeaderBanner />,
+            headerStyle: { height: 105 },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+
+
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
 
 export default App;
+
+const styles = StyleSheet.create({
+  image: {
+    width: 180,
+    height: 40,
+    marginBottom: 10,
+  },
+});

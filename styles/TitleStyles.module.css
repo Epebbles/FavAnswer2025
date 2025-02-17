@@ -1,0 +1,18 @@
+.container {
+  flex: 1;
+  background-color: 'white';
+}
+.header {
+  flex: 3;
+  align-items: 'center';
+  justify-content: 'center';
+}
+.main {
+  flex: 22;
+}
+.title {
+  text-align: 'center';
+  font-size: 24;
+  font-weight: '500';
+  margin-top: 11;
+}
